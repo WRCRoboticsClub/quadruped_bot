@@ -71,7 +71,6 @@ void Leg::get_angles(double height, double length)
         int hip_deg = int(90 - (180.0 / M_PI) * (atan2(length, height) + acos(hip_arg)));
         knee_angle = int((180.0 / M_PI) * (acos(knee_arg)));
         hip_angle = map(hip_deg, 0, 180, 180, 0);
-        // knee_angle = map(knee_deg, 0, 180, 180, 0);
     }
     hip_angle = constrain(hip_angle, 0, 180);
     knee_angle = constrain(knee_angle, 0, 180);
@@ -94,7 +93,7 @@ void Leg::move_vertical()
     }
 }
 
-void Leg::move_horizontal()
+void Leg::move_horizontal()   // only for eft side leg
 {
     // for (float i = 0; i >= -1*step_size; i = i - 0.1)
     // {
@@ -109,7 +108,7 @@ void Leg::move_horizontal()
         move_leg();
     }
 }
-void Leg ::move_arc()
+void Leg ::move_arc()  //only for left side leg
 {
     const int frames = 40;
     double y_arc;
@@ -119,18 +118,14 @@ void Leg ::move_arc()
     {
         double t = (double)i / frames;
         double x_arc = -t * step_size;
-        // Serial.println(x_arc);
         y_arc = height - (sqrt((step_size / 2) * (step_size / 2) - (x_arc + step_size / 2) * (x_arc + step_size / 2)));
-        // x_horiz = x_horiz + t * step_size;
         get_angles(y_arc, x_arc);
-        // print_angles(x_arc,y_arc);
         move_leg();
     }
 }
 
-void Leg ::crawl_forward()
+void Leg ::crawl_forward()    // only for left side leg
 {
-    // Serial.println(pos);
     if (pos == 0)
     {
         move_arc();
@@ -139,7 +134,6 @@ void Leg ::crawl_forward()
     }
     else if (pos == 1)
     {
-        // Serial.println(pos);
         move_horizontal();
         pos = 0;
         return;
@@ -159,25 +153,6 @@ void Leg ::move_angles(double hipangle, double kneeangle)
     servoknee.write(kneeangle + knee_offset);
 }
 
-double Leg::get_hipoffset()
-{
-    return hip_offset;
-}
-
-double Leg::get_kneeoffset()
-{
-    return knee_offset;
-}
-
-double Leg::get_hip_angle()
-{
-    return hip_angle;
-}
-
-double Leg::get_knee_angle()
-{
-    return knee_angle;
-}
 
 void Leg ::print_angles(double length, double height)
 {
@@ -191,15 +166,7 @@ void Leg ::print_angles(double length, double height)
     DEBUG_PRINT("\n");
 }
 
-void Quadruped::init(double height, double step_size)
-{
-    this->height = height;
-    this->step_size = step_size;
-    Front_Left.init(this->height, this->step_size);
-    Front_Right.init(this->height, this->step_size);
-    Back_Left.init(this->height, this->step_size);
-    Back_Right.init(this->height, this->step_size);
-}
+
 void Leg ::calibrate(String name)
 {
     DEBUG_PRINT("calibrating ");
@@ -266,6 +233,20 @@ void Leg ::calibrate(String name)
     DEBUG_PRINT("done calibrating leg!!!\n");
 }
 
+
+
+
+
+void Quadruped::init(double height, double step_size)
+{
+    this->height = height;
+    this->step_size = step_size;
+    Front_Left.init(this->height, this->step_size);
+    Front_Right.init(this->height, this->step_size);
+    Back_Left.init(this->height, this->step_size);
+    Back_Right.init(this->height, this->step_size);
+}
+
 void Quadruped::move_bot()
 {
     Front_Left.move_leg();
@@ -306,7 +287,7 @@ void Quadruped::move_forward()
         double y_arc;
         double x_arc, x_horiz = -step_size;
         double step = step_size / frames;
-        // Forward arc
+        
         for (int i = 0; i <= frames; i++)
         {
             double t = (double)i / frames;
@@ -320,7 +301,6 @@ void Quadruped::move_forward()
             {
                 Front_Left.get_angles(height, x_horiz);
                 Back_Right.get_angles(height, x_horiz);
-                Back_Right.print_angles(height, x_horiz);
                 Front_Right.get_angles(y_arc, x_arc);
                 Back_Left.get_angles(y_arc, x_arc);
                 // FL and BR 's next move should be an horizontal(backward)
@@ -330,7 +310,6 @@ void Quadruped::move_forward()
             {
                 Front_Left.get_angles(y_arc, x_arc);
                 Back_Right.get_angles(y_arc, x_arc);
-                Back_Right.print_angles(y_arc, x_arc);
                 Front_Right.get_angles(height, x_horiz);
                 Back_Left.get_angles(height, x_horiz);
                 // FL and BR 's next move should be an arc(forward)
@@ -421,7 +400,6 @@ void Quadruped ::move_vert()
     for (float i = height; i >= 6.5; i = i - 0.1)
     {
         Back_Right.get_angles(i, 0);
-        // Back_Left.print_angles()
         Front_Left.get_angles(i, 0);
         Front_Right.get_angles(i, 0);
         Back_Left.get_angles(i, 0);
