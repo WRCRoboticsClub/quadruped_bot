@@ -3,7 +3,7 @@
 #include <math.h>
 #include <quadruped.h>
 
-// #define DEBUG
+#define DEBUG
 #ifdef DEBUG
 #define DEBUG_PRINT(x) Serial.print(x)
 #else
@@ -79,13 +79,13 @@ void Leg::get_angles(double height, double length)
 void Leg::move_vertical()
 {
 
-    for (float i = height; i >= 5; i = i - 0.1)
+    for (float i = height; i >= 6.5; i = i - 0.1)
     {
         get_angles(i, 0);
         print_angles(0, i);
         move_leg();
     }
-    for (float i = 5; i <= height; i = i + 0.1)
+    for (float i = 6.5; i <= height; i = i + 0.1)
     {
         get_angles(i, 0);
         print_angles(0, i);
@@ -208,7 +208,7 @@ void Leg ::calibrate(String name)
             DEBUG_PRINT("\n");
         }
     } while (c != 'x');
-    // servohip.write(90);
+    servohip.write(90);
     c = 'o';
 
     DEBUG_PRINT("setting knee offset\n\n");
@@ -452,7 +452,8 @@ void Quadruped ::shake_hand()
 {
     moveTo_base_pos();
     delay(100);
-    Front_Right.move_angles(180, 30);
+    Front_Right.servohip.write(180);
+     Front_Right.servoknee.write(30);   
     delay(500);
     for (int times = 0; times < 2; times++)
     {

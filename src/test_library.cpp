@@ -10,11 +10,11 @@ void setup()
 {
 
     Serial.begin(115200);
-    quadruped.init(15, 7);
-    back_left.set_offset(-10.00,6.00);
-    back_right.set_offset(3.00,-12.00);
-   front_right.set_offset(7.00,-4.00);
-   front_left.set_offset(-6.00,0.00);
+    quadruped.init(12, 7);
+    back_left.set_offset(-10.00, 10.00);
+    back_right.set_offset(3.00, -12.00);
+    front_right.set_offset(6.00,-10.00);
+    front_left.set_offset(-6.00,2.00);
     quadruped.moveTo_base_pos();
     delay(3000);
     quadruped.move_vert();
@@ -40,9 +40,10 @@ void loop()
         {
             quadruped.shake_hand();
         }
-                else if (c == 'h')
+        else if (c == 'h')
         {
             quadruped.say_hi();
         }
     }
+    delay(500);
 }
