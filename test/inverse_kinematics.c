@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -22,11 +23,9 @@ int map(int x, int in_min, int in_max, int out_min, int out_max)
 void calc_angles(Leg *leg, double length, double height) // for horizontal motion of leg
 {
     double d = pow((pow(length, 2) + pow(height, 2)), 0.5);
-    leg->hip_angle = 90 - floor(
-        (180 / M_PI) *
-        ((atan(length / height) + acos((pow(leg->Humerus, 2) + pow(d, 2) - pow(leg->Radius, 2)) / (2 * leg->Humerus * d))) - (leg->hip_offset*(M_PI/180)))
-    );
-    leg->knee_angle = map(floor((180 / M_PI) * acos((pow(leg->Humerus, 2) - pow(d, 2) + pow(leg->Radius, 2)) / (2 * leg->Humerus * leg->Radius))), 0, 180, 180, 0);
+    leg->hip_angle = 90 - ((180 / M_PI) *
+                           ((atan(length / height) + acos((pow(leg->Humerus, 2) + pow(d, 2) - pow(leg->Radius, 2)) / (2 * leg->Humerus * d))) - (leg->hip_offset * (M_PI / 180))));
+    leg->knee_angle = map(((180 / M_PI) * acos((pow(leg->Humerus, 2) - pow(d, 2) + pow(leg->Radius, 2)) / (2 * leg->Humerus * leg->Radius))), 0, 180, 180, 0);
 }
 
 int main()
@@ -43,25 +42,26 @@ int main()
     leg[0].hip_offset = 1;
     printf("choose leg and max height to raise the leg : \n\n\n");
     scanf("%d%lf%lf", &temp, &height, &length);
-    printf("\nleg.no.      hip_angle       knee_angle       length         height from ground\n");
+    printf("\nleg.no,hip_angle,knee_angle,length,height from ground\n");
     const int frames = 40; // smooth frames per step
     double y;              // foot height
-    double x=0;
+    double x = 0;
     double step = length / frames;
     // Forward arc
     for (int i = 0; i <= frames; i++)
     {
         double t = (double)i / frames;
-        double x = length - t * length;
-        y = 10 - (sqrt((length / 2) * (length / 2) - (x - length / 2) * (x - length / 2)));
-        calc_angles(&leg[0], x, y);
-        printf("%d         %lf            %lf             %lf       %lf\n", temp, leg[temp].hip_angle, leg[temp].knee_angle, x, y);
+        int power = length < 0 ? 2 : 1;  //2 for -ve length(leg infront) ,1 for +ve(leg backward)
+        double x = power == 1 ? length - t * length : t *length;
+        y = height - (sqrt((length / 2) * (length / 2) - (x - length / 2) * (x - length / 2)));
+        calc_angles(&leg[temp], x, y);
+        printf("%d,%lf,%lf,%lf,%lf\n", temp, leg[temp].hip_angle, leg[temp].knee_angle, x, y);
     }
-    printf("\nleg.no.      hip_angle       knee_angle       length         height from ground\n");
-    for (int i = 0; i <= frames; i++)
-    {
-        x = i == 0 ? x : x + step;
-        calc_angles(&leg[temp], x, height);
-        printf("%d         %lf            %lf             %lf       %lf\n", temp, leg[temp].hip_angle, leg[temp].knee_angle, x, height);
-    }
+    // printf("\nleg.no.      hip_angle       knee_angle       length         height from ground\n");
+    // for (int i = 0; i <= frames; i++)
+    // {
+    //     x = i == 0 ? x : x + step;
+    //     calc_angles(&leg[temp], x, height);
+    //     printf("%d         %lf            %lf             %lf       %lf\n", temp, leg[temp].hip_angle, leg[temp].knee_angle, x, height);
+    // }
 }

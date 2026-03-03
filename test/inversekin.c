@@ -41,16 +41,16 @@ int main()
     double length;
     for (int i = 0; i < 4; i++)
     {
-        leg[i].Humerus = 3;
-        leg[i].Radius = 2.5;
+        leg[i].Humerus = 8;
+        leg[i].Radius = 10.25;
     }
     printf("choose leg and max height to raise the leg : \n\n\n");
     scanf("%d%lf%lf", &temp, &height, &length);
-    printf("leg.no.     hip_angle     knee_angle     height from ground\n");
+
     const int frames = 40; // smooth frames per step
     double y;            // foot height
     double x = 0;
-    double step = height/frames;
+    double step = length/frames;
 
     // Forward arc
 //    for (int i = 0; i <= frames; i++)
@@ -60,11 +60,11 @@ int main()
 //         calc_angles(&leg[temp], 0, y);
 //         printf("%d         %lf            %lf             %lf\n", temp, leg[temp].hip_angle, leg[temp].knee_angle, pos);
 //     }
-    printf("\n\n\n\nleg.no.     hip_angle     knee_angle       length      height_from_ground\n");
+    printf("\n\n\n\nleg_no,hip_angle,knee_angle,length,height_from_ground\n");
     for (int i = 0; i <= frames; i++)
     {
          x = i == 0 ? x : x + step;
         calc_angles(&leg[temp], x, height);
-        printf("%d         %lf            %lf             %lf       %lf\n", temp, leg[temp].hip_angle, leg[temp].knee_angle, x, height);
+        printf("%d,%lf,%lf,%lf,%lf\n", temp, leg[temp].hip_angle, leg[temp].knee_angle, x, height);
     }
 }
