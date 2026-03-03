@@ -27,8 +27,8 @@ private:
     int hip_Pin;
     int knee_Pin;
     double step_size;  // distance covered by leg in 1 footstep
-    int side;
-    int longitudinal;
+    int side; // left right
+    int longitudinal; // front back
 
 public:
     Servo servohip;
